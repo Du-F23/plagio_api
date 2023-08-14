@@ -1,0 +1,1 @@
+web: gunicorn 'plagio_api.wsgi'
