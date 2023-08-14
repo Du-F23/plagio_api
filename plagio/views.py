@@ -1,5 +1,5 @@
 from django.http import JsonResponse
-//from duckduckgo_search import DDGS
+#from duckduckgo_search import DDGS
 from duckduckgo_search.api import DDGS
 from fuzzywuzzy import fuzz
 
