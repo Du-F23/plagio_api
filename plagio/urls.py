@@ -1,7 +1,7 @@
 from django.urls import path
-import views
+from plagio.views import search_view
 
 
-urlpatterns=[
-    path('v1/search/', views.search_view)
+urlpatterns = [
+    path('v1/search/', search_view)
 ]
