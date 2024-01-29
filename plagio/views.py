@@ -1,5 +1,4 @@
 from django.http import JsonResponse
-#from duckduckgo_search import DDGS
 from duckduckgo_search import DDGS
 from fuzzywuzzy import fuzz
 
@@ -9,7 +8,10 @@ def similarity(a, b):
 
 
 def search_view(request):
-    query = request.GET.get('q', '')  # Obtén el término de búsqueda de los parámetros GET
+    query = request.GET.get('q', '')
+
+    if not query:
+        return JsonResponse({'results': [], 'similar_count': 0}, safe=False)
 
     results = []
     similar_count = 0
