@@ -40,7 +40,7 @@ def search_view(request):
     similar_count = len(duckduckgo_results)
 
     response_data = {
-        'results': duckduckgo_results,
+        'data': duckduckgo_results,
         'similar_count': similar_count
     }
 
