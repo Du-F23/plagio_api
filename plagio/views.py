@@ -25,7 +25,7 @@ def duckduckgo_search(query):
         return results
 
     except Exception as e:
-        print(e)
+        return JsonResponse({'error': str(e)})
         pass
 
 
@@ -33,15 +33,20 @@ def search_view(request):
     query = request.GET.get('q', '')
 
     if not query:
-        return JsonResponse({'results': [], 'similar_count': 0}, safe=False)
+        return JsonResponse({
+            'results': [],
+            'similar_count': 0,
+            'query': 'Your search query is empty. Please provide a search query.'
+        }, safe=False)
 
     duckduckgo_results = duckduckgo_search(query)
 
     similar_count = len(duckduckgo_results)
 
     response_data = {
-        'data': duckduckgo_results,
-        'similar_count': similar_count
+        'results': duckduckgo_results,
+        'similar_count': similar_count,
+        'query': query,
     }
 
     return JsonResponse(response_data, safe=False)
