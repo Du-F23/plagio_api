@@ -1,4 +1,4 @@
-#!/home/du4rt3/Workspace/Python/plagio_api/venv/bin/python
+#!/home/du4rt3/WorkSpace/plagio_api/venv/bin/python
 # -*- coding: utf-8 -*-
 import re
 import sys
