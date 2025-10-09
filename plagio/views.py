@@ -1,52 +1,23 @@
-from django.http import JsonResponse
-from ddg import Duckduckgo
-from fuzzywuzzy import fuzz
-import json
+from rest_framework.response import Response
+
+from lib.api_view.base_api_view import BaseAPIView
+from lib.responses.responses import BadResponse
+from plagio.lib.engines import DuckDuckGoEngine
 
 
-def similarity(a, b):
-    return fuzz.partial_ratio(a, b)
+class SearchView(BaseAPIView):
+    def get(self, request):
+        query = request.data.get('q', '')
 
+        if not query or query.isspace():
+            return BadResponse({'results': [], 'similar_count': 0,
+                'query': 'Your search query is empty. Please provide a search query.'})
+        duckduckgo = DuckDuckGoEngine()
 
-def duckduckgo_search(query):
+        duckduckgo_results = duckduckgo.search(query=query)
 
-    engine = Duckduckgo()
+        similar_count = len(duckduckgo_results)
 
-    try:
-        search_results = engine.search(query).get('data')
-        similar_count = 0
-        results = []
-        for r in search_results:
-            similarity_score = similarity(query, r.get('description'))
-            if similarity_score >= 60:
-                similar_count += 1
-            results.append({'result': r, 'similarity_score': similarity_score})
+        response_data = {'query': query, 'similar_count': similar_count, 'results': duckduckgo_results}
 
-        return results
-
-    except Exception as e:
-        return JsonResponse({'error': str(e)})
-        pass
-
-
-def search_view(request):
-    query = request.GET.get('q', '')
-
-    if not query:
-        return JsonResponse({
-            'results': [],
-            'similar_count': 0,
-            'query': 'Your search query is empty. Please provide a search query.'
-        }, safe=False)
-
-    duckduckgo_results = duckduckgo_search(query)
-
-    similar_count = len(duckduckgo_results)
-
-    response_data = {
-        'results': duckduckgo_results,
-        'similar_count': similar_count,
-        'query': query,
-    }
-
-    return JsonResponse(response_data, safe=False)
+        return Response(response_data)
