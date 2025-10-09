@@ -18,20 +18,22 @@ class SearchView(BaseAPIView):
             }
 
             results = []
+            similar_count = 0
             for engine in body.engines:
                 engine_enum = engine if isinstance(engine, Engines) else Engines(engine)
 
                 if engine_enum in available_engines:
                     engine_instance = available_engines[engine_enum]
-                    engine_results = engine_instance.search(query=body.query, num_resultados=body.num_results)
+                    engine_results, similarity = engine_instance.search(query=body.query,
+                                                                       num_resultados=body.num_results)
                     results.extend(engine_results)
-
-            similar_count = len(results)
+                    similar_count += similarity
 
             if similar_count == 0:
                 return NoContentResponse({'query': body.query, 'similar_count': similar_count})
 
-            response_data = {'query': body.query, 'similar_count': similar_count, 'results': results}
+            results = sorted(results, key=lambda x: x['similarity_score'], reverse=True)
+            response_data = {'query': body.query, 'search_results': len(results),'similar_count': similar_count, 'results': results}
 
             return Response(response_data)
         except ValidationError as e:

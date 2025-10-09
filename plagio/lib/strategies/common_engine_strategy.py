@@ -1,7 +1,7 @@
 import logging
 
 from abc import ABC, abstractmethod
-from typing import List, Dict
+from typing import List, Dict, Tuple
 
 from Levenshtein import ratio
 
@@ -35,7 +35,7 @@ class CommonEngineStrategy(ABC):
         pass
 
     @staticmethod
-    def format_result(search_results: List, query: str) -> List[CommonResultsEngine]:
+    def format_result(search_results: List, query: str) -> List[Tuple[CommonResultsEngine, int]]:
         similar_count = 0
         results = []
         logger.info(f'Found {len(search_results)} results')
@@ -53,4 +53,4 @@ class CommonEngineStrategy(ABC):
         logger.info(f'{similar_count} results have a similarity score of at least 60%')
         results = sorted(results, key=lambda x: x['similarity_score'], reverse=True)
         logger.info(f'Sorted results by similarity score')
-        return results
+        return results, similar_count
