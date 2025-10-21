@@ -19,8 +19,9 @@ class BraveSearchEngine(CommonEngineStrategy):
         try:
             logger.info(f'Searching for {query} on Brave')
             query = query.replace("\n", " ").strip()
+            query = query[:300]
 
-            search_results = self.engine.search(q=query[:400], count=num_resultados)
+            search_results = self.engine.search(q=query, count=num_resultados)
 
             return BraveSearchEngine.format_result(search_results.web_results, query)
         except Exception as e:

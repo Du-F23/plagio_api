@@ -39,18 +39,20 @@ class CommonEngineStrategy(ABC):
         similar_count = 0
         results = []
         logger.info(f'Found {len(search_results)} results')
-        for r in search_results:
-            try:
-                similarity_score = CommonEngineStrategy.similarity(query, r.get('description'))
-                r['url'] = str(r.get('url'))
-                if similarity_score >= 60:
-                    similar_count += 1
-                r = CommonResultSearchEngine(**r)
+        if len(search_results) != 0:
+            for r in search_results:
+                try:
+                    similarity_score = CommonEngineStrategy.similarity(query, r.get('description'))
+                    r['url'] = str(r.get('url'))
+                    if similarity_score >= 60:
+                        similar_count += 1
+                    r = CommonResultSearchEngine(**r)
 
-                results.append(CommonResultsEngine(result=r, similarity_score=similarity_score).model_dump())
-            except ValueError:
-                continue
-        logger.info(f'{similar_count} results have a similarity score of at least 60%')
-        results = sorted(results, key=lambda x: x['similarity_score'], reverse=True)
-        logger.info(f'Sorted results by similarity score')
+                    results.append(CommonResultsEngine(result=r, similarity_score=similarity_score).model_dump())
+                except ValueError:
+                    continue
+            logger.info(f'{similar_count} results have a similarity score of at least 60%')
+            results = sorted(results, key=lambda x: x['similarity_score'], reverse=True)
+            logger.info(f'Sorted results by similarity score')
+
         return results, similar_count
